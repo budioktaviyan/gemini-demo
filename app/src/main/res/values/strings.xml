@@ -1,3 +1,5 @@
 <resources>
   <string name="app_name">Demo Gemini</string>
+  <string name="chat_label">Message</string>
+  <string name="chat_action">Send</string>
 </resources>

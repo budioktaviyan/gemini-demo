@@ -61,6 +61,7 @@ dependencies {
   implementation(platform(libs.androidx.compose.bom))
   implementation(libs.bundles.compose)
   implementation(libs.generativeai)
+  implementation(libs.bundles.kotlinx.coroutines)
 
   testImplementation(libs.junit)
 
