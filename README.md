@@ -1,2 +1,3 @@
-# gemini-demo
-Gemini API on Android Demo Application
+# Gemini Demo
+
+## Gemini API on Android Demo Application
