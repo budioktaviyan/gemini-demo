@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -72,9 +73,9 @@ fun ChatBubble(
     chat.participant == Participant.ERROR
 
   val backgroundColor = when (chat.participant) {
-    Participant.MODEL -> { MaterialTheme.colorScheme.primaryContainer }
-    Participant.USER -> { MaterialTheme.colorScheme.tertiaryContainer }
-    Participant.ERROR -> { MaterialTheme.colorScheme.errorContainer }
+    Participant.MODEL -> MaterialTheme.colorScheme.primaryContainer
+    Participant.USER -> MaterialTheme.colorScheme.tertiaryContainer
+    Participant.ERROR -> MaterialTheme.colorScheme.errorContainer
   }
 
   val bubbleShape = if (isModelMessage) {
@@ -150,6 +151,7 @@ fun MessageInput(
 
   val scrollState = rememberScrollState()
   val coroutineScope = rememberCoroutineScope()
+  val keyboardController = LocalSoftwareKeyboardController.current
   val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
 
   LaunchedEffect(key1 = keyboardHeight) {
@@ -184,9 +186,13 @@ fun MessageInput(
       IconButton(
         onClick = {
           if (message.isNotBlank()) {
-            onSendMessage(message)
-            message = ""
-            resetScroll()
+            keyboardController?.hide()
+
+            coroutineScope.launch {
+              onSendMessage(message)
+              message = ""
+              resetScroll()
+            }
           }
         },
         modifier = Modifier

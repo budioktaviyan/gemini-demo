@@ -35,7 +35,7 @@ class MainViewModel : ViewModel() {
   private val chat = generativeModel.startChat(
     history = listOf(
       content(role = Participant.MODEL.name) {
-        text("Hai! Ada yang bisa Aku bantu?")
+        text("Hi! Anything I can help with?")
       }
     )
   )
@@ -64,17 +64,17 @@ class MainViewModel : ViewModel() {
 
     viewModelScope.launch {
       try {
-        val response = chat.sendMessage(message)
+        val outputMessage = Chat(
+          participant = Participant.MODEL,
+          isPending = true
+        )
         mUiState.value.replaceLastPendingMessage()
+        mUiState.value.addMessage(outputMessage)
 
-        response.text?.let { result ->
-          mUiState.value.addMessage(
-            Chat(
-              text = result,
-              participant = Participant.MODEL,
-              isPending = false
-            )
-          )
+        chat.sendMessageStream(message).collect { response ->
+          outputMessage.isPending = false
+          outputMessage.text = outputMessage.text.plus(response.text)
+          mUiState.value.replaceLastPendingMessage()
         }
       } catch (error: Exception) {
         mUiState.value.replaceLastPendingMessage()
